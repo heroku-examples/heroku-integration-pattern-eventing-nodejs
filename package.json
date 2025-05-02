@@ -1,0 +1,45 @@
+{
+	"name": "heroku-integration-pattern-eventing-nodejs",
+	"version": "1.0.0",
+	"description": "Node.js implementation of the Salesforce eventing pattern (Pricing Engine Job)",
+	"type": "module",
+	"main": "server/index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node server/index.js",
+		"lint": "eslint .",
+		"format": "prettier --write ."
+	},
+	"keywords": [
+		"heroku",
+		"salesforce",
+		"integration",
+		"eventing",
+		"nodejs",
+		"pricing-engine"
+	],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@fastify/env": "^5.0.2",
+		"@fastify/sensible": "^6.0.3",
+		"@heroku/salesforce-sdk-nodejs": "0.3.4-ea",
+		"ajv": "^8.17.1",
+		"ajv-formats": "^3.0.1",
+		"dotenv": "^16.5.0",
+		"fastify": "^5.3.2",
+		"fastify-plugin": "^5.0.1",
+		"ioredis": "^5.6.1",
+		"node-fetch": "^3.3.2"
+	},
+	"devDependencies": {
+		"eslint": "9",
+		"eslint-config-prettier": "^10.1.2",
+		"eslint-plugin-import": "^2.31.0",
+		"eslint-plugin-n": "^17.17.0",
+		"eslint-plugin-prettier": "^5.2.6",
+		"eslint-plugin-promise": "^7.2.1",
+		"globals": "^16.0.0",
+		"prettier": "^3.5.3"
+	}
+}
