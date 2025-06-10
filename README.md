@@ -56,7 +56,7 @@ This section focuses on how to develop and test locally before deploying to Hero
 > [!IMPORTANT]
 > If have deployed the application, as described below and want to return to local development, you may want to destroy it to avoid race conditions since both will share the same job queue, use `heroku destroy`. In real situation you would have a different queue store for developer vs production.
 
-Even though we are running and testing locally, we will still configure required aspects of the **Heroku Eventing** and **Heroku Integration** add-ons to allow the code to authenticate and interact with your Salesforce Org as it would once deployed. Additionally the Heroku Key Value Sore is used to manage a job queue for processing requests sent to the webhook. Start with the following commands to create an empty application, configure the addons and run the sample code locally:
+Even though we are running and testing locally, we will still configure required aspects of the **Heroku Eventing** and **Heroku Integration** add-ons to allow the code to authenticate and interact with your Salesforce Org as it would once deployed. Additionally the Heroku Key Value Store is used to manage a job queue for processing requests sent to the webhook. Start with the following commands to create an empty application, configure the addons and run the sample code locally:
 
 ```
 heroku create
