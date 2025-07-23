@@ -1,7 +1,7 @@
 # Heroku Integration - Using Eventing to drive Automation and Communication (Node.js)
 
 > [!IMPORTANT]
-> For use with the Heroku Integration and Heroku Eventing pilots only
+> For use with Heroku AppLink and Heroku Eventing pilots only
 
 This sample demonstrates how to use Heroku Eventing to start work and notify users once it completes using [Custom Notifications](https://help.salesforce.com/s/articleView?id=platform.notif_builder_custom.htm&type=5). These notifications are sent to the user's desktop or mobile device running Salesforce Mobile. Flow is used in this sample to demonstrate how processing can be handed off to low-code tools such as Flow. 
 
@@ -21,10 +21,10 @@ Technically speaking, this sample includes two process types `web` and `worker`,
 # Requirements
 
 - Heroku login
-- Heroku Integration Pilot enabled
+- Heroku AppLink enabled
 - Heroku Eventing Pilot enabled
 - Heroku CLI installed
-- Heroku Integration Pilot CLI plugin is installed
+- Heroku AppLink CLI plugin is installed
 - Heroku Eventing Pilot CLI plugin is installed
 - Salesforce CLI installed
 - Node.js (LTS version recommended, e.g., 20.x or later) and pnpm installed
@@ -56,7 +56,7 @@ This section focuses on how to develop and test locally before deploying to Hero
 > [!IMPORTANT]
 > If have deployed the application, as described below and want to return to local development, you may want to destroy it to avoid race conditions since both will share the same job queue, use `heroku destroy`. In real situation you would have a different queue store for developer vs production.
 
-Even though we are running and testing locally, we will still configure required aspects of the **Heroku Eventing** and **Heroku Integration** add-ons to allow the code to authenticate and interact with your Salesforce Org as it would once deployed. Additionally the Heroku Key Value Sore is used to manage a job queue for processing requests sent to the webhook. Start with the following commands to create an empty application, configure the addons and run the sample code locally:
+Even though we are running and testing locally, we will still configure required aspects of the **Heroku Eventing** add-on and **Heroku AppLink** to allow the code to authenticate and interact with your Salesforce Org as it would once deployed. Additionally the Heroku Key Value Sore is used to manage a job queue for processing requests sent to the webhook. Start with the following commands to create an empty application, configure the addons and run the sample code locally:
 
 ```
 heroku create
@@ -207,19 +207,19 @@ Salesforce transmits a `transactionKey` with each Salesforce CDC event that has 
 
 # Technical Information
 
-- Events sent to this application do not contain any authentication information. As such the **Heroku Integration** add-on is used above. Notably the `--store-as-run-as-user` CLI parameter is used when connecting the Salesforce org. This allows the worker jobs to request a Salesforce org authentication for their processing using the `@heroku/salesforce-sdk-nodejs` SDK. Note that in contrast with some other patterns, this user is not necessarily the user that triggered the events. It is important to ensure the user used has all the applicable permissions to perform the work required. The Node.js application fetches credentials via an API call to the Heroku Integration service using `HEROKU_INTEGRATION_API_URL` and `HEROKU_INTEGRATION_TOKEN` (these are set by the add-on in Heroku, for local dev they need to be in `.env`).
+- Events sent to this application do not contain any authentication information. As such **Heroku AppLink** is used above. Notably the `--store-as-run-as-user` CLI parameter is used when connecting the Salesforce org. This allows the worker jobs to request a Salesforce org authentication for their processing using the `@heroku/salesforce-sdk-nodejs` SDK. Note that in contrast with some other patterns, this user is not necessarily the user that triggered the events. It is important to ensure the user used has all the applicable permissions to perform the work required. The Node.js application fetches credentials via an API call to Heroku AppLink service using `HEROKU_INTEGRATION_API_URL` and `HEROKU_INTEGRATION_TOKEN` (these are set by the add-on in Heroku, for local dev they need to be in `.env`).
 - Events are not filtered in this sample, so any changes to **Opportunities** result in events triggering **Quote** generation. For example one could configure the subscription to only forward/stream events to the web hook when the `StageName` is of a certain value, e.g. `Proposal/Quote`. For more information see [here](https://devcenter.heroku.com/articles/getting-started-heroku-events#subscribe-to-platform-events-in-salesforce) and [here](https://devcenter.heroku.com/articles/heroku-events-cli#heroku-events-subscriptions-salesforce-create).
 - The Node.js application uses Fastify (`server/index.js`) for the `web` process to handle incoming webhook requests efficiently.
 - The `web` process (`server/routes/api.js`) implements logic to group CDC events by their `transactionKey` and buffer them in memory until events are received for a different transaction or 15 seconds have passed. The implementation of this approach is not designed for production with multiple web dynos, as it makes assumptions about the processing taking place in only one instance (Dyno) of the web worker. To implement this for production where by multiple web workers might be scaled up, a shared state approach should be used such as Redis to manage the buffer - precise details of this approach is outside the scope of this article. To learn more about `transactionKey` and best practices for handling it refer to [this](https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_replication_steps.htm) article.
 - The webhook exposed by the `web` process is exposed to the public internet (currently required for Heroku Eventing webhooks) and does not have any authentication applied in this sample. Before deploying to production consider implementing authentication and leverage the `--token` parameter of the `events:publications:webhook:create` command accordingly. See [here](https://devcenter.heroku.com/articles/heroku-events-cli#heroku-events-subscriptions-salesforce-create) for more information.
-- The `CONNECTION_NAMES` environment variable is used by this sample to provide the alias of the connected Salesforce org given to the `salesforce:connect` command. This is used by the Heroku Integration API call to specify the target org.
+- The `CONNECTION_NAMES` environment variable is used by this sample to provide the alias of the connected Salesforce org given to the `salesforce:connect` command. This is used by Heroku AppLink API call to specify the target org.
 - The `Procfile` defines `web: node server/index.js` and `worker: node server/worker.js`.
 
 ## Other Samples
 
 | Sample | What it covers? |
 | ------ | --------------- |
-| [Salesforce API Access](https://github.com/heroku-examples/heroku-integration-pattern-api-access-nodejs) | This sample application showcases how to extend a Heroku web application by integrating it with Salesforce APIs, enabling seamless data exchange and automation across multiple connected Salesforce orgs. It also includes a demonstration of the Salesforce Bulk API, which is optimized for handling large data volumes efficiently. |
-| [Extending Apex, Flow and Agentforce](https://github.com/heroku-examples/heroku-integration-pattern-org-action-nodejs) | This sample demonstrates importing a Heroku application into an org to enable Apex, Flow, and Agentforce to call out to Heroku. For Apex, both synchronous and asynchronous invocation are demonstrated, along with securely elevating Salesforce permissions for processing that requires additional object or field access. |
-| [Scaling Batch Jobs with Heroku](https://github.com/heroku-examples/heroku-integration-pattern-org-job-nodejs) | This sample seamlessly delegates the processing of large amounts of data with significant compute requirements to Heroku Worker processes. It also demonstrates the use of the Unit of Work aspect of the SDK (JavaScript only for the pilot) for easier utilization of the Salesforce Composite APIs. |
-| [Using Eventing to drive Automation and Communication](https://github.com/heroku-examples/heroku-integration-pattern-eventing-nodejs) | This sample extends the batch job sample by adding the ability to use eventing to start the work and notify users once it completes using Custom Notifications. These notifications are sent to the user's desktop or mobile device running Salesforce Mobile. Flow is used in this sample to demonstrate how processing can be handed off to low-code tools such as Flow. |
+| [Salesforce API Access](https://github.com/heroku-examples/heroku-applink-pattern-api-access-nodejs) | This sample application showcases how to extend a Heroku web application by integrating it with Salesforce APIs, enabling seamless data exchange and automation across multiple connected Salesforce orgs. It also includes a demonstration of the Salesforce Bulk API, which is optimized for handling large data volumes efficiently. |
+| [Extending Apex, Flow and Agentforce](https://github.com/heroku-examples/heroku-applink-pattern-org-action-nodejs) | This sample demonstrates importing a Heroku application into an org to enable Apex, Flow, and Agentforce to call out to Heroku. For Apex, both synchronous and asynchronous invocation are demonstrated, along with securely elevating Salesforce permissions for processing that requires additional object or field access. |
+| [Scaling Batch Jobs with Heroku](https://github.com/heroku-examples/heroku-applink-pattern-org-job-nodejs) | This sample seamlessly delegates the processing of large amounts of data with significant compute requirements to Heroku Worker processes. It also demonstrates the use of the Unit of Work aspect of the SDK (JavaScript only for the pilot) for easier utilization of the Salesforce Composite APIs. |
+| [Using Eventing to drive Automation and Communication](https://github.com/heroku-examples/heroku-applink-pattern-eventing-nodejs) | This sample extends the batch job sample by adding the ability to use eventing to start the work and notify users once it completes using Custom Notifications. These notifications are sent to the user's desktop or mobile device running Salesforce Mobile. Flow is used in this sample to demonstrate how processing can be handed off to low-code tools such as Flow. |
