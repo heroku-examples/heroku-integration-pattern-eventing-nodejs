@@ -780,8 +780,8 @@ packages:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
     engines: {node: '>= 0.4'}
 
-  form-data@4.0.2:
-    resolution: {integrity: sha512-hGfm/slu0ZabnNt4oaRZ6uREyfCj6P4fT/n6A1rGV+Z0VdGXjfOhVUpkn6qVQONHGIFwmveGXyDs75+nr6FM8w==}
+  form-data@4.0.4:
+    resolution: {integrity: sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==}
     engines: {node: '>= 6'}
 
   formdata-polyfill@4.0.10:
@@ -1916,7 +1916,7 @@ snapshots:
       csv-parse: 5.6.0
       csv-stringify: 6.5.2
       faye: 1.4.0
-      form-data: 4.0.2
+      form-data: 4.0.4
       https-proxy-agent: 5.0.1
       multistream: 3.1.0
       node-fetch: 2.7.0
@@ -1941,7 +1941,7 @@ snapshots:
       change-case: 4.1.2
       fast-levenshtein: 3.0.0
       faye: 1.4.0
-      form-data: 4.0.2
+      form-data: 4.0.4
       js2xmlparser: 4.0.2
       jsonwebtoken: 9.0.2
       jszip: 3.10.1
@@ -2663,11 +2663,12 @@ snapshots:
     dependencies:
       is-callable: 1.2.7
 
-  form-data@4.0.2:
+  form-data@4.0.4:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       es-set-tostringtag: 2.1.0
+      hasown: 2.0.2
       mime-types: 2.1.35
 
   formdata-polyfill@4.0.10:
@@ -2987,7 +2988,7 @@ snapshots:
       csv-parse: 4.16.3
       csv-stringify: 5.6.5
       faye: 1.4.0
-      form-data: 4.0.2
+      form-data: 4.0.4
       fs-extra: 8.1.0
       https-proxy-agent: 5.0.1
       inquirer: 7.3.3
